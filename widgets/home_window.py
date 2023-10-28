@@ -29,7 +29,7 @@ class HomeWindow:
         Retorna el boton
         """
         button = Button(text="Crear huelga")#, on_press=onPress)
-        button.style.padding = 20
+        button.style.padding = 45
         button.style.font_size = 14
         button.style.width = 200
         return button
@@ -40,7 +40,8 @@ class HomeWindow:
         Retorna el boton
         """
         button = Button(text="Consultar huelga")#, on_press=onPress)
-        button.style.padding = 90
+        button.style.padding = 45
+        
         button.style.font_size = 14
         button.style.width = 200
         return button
