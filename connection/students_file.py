@@ -1,5 +1,4 @@
 import os
-from typing import Any
 class StudentsFile:
     """Clase que lee un fichero xlsx de los alumnos de la huelga reciente\n
       y los almacena en la base de datos"""
@@ -12,7 +11,7 @@ class StudentsFile:
       """Metodo que carga los alumnos del fichero en una lista\n
          Returns:La lista con los alumnos cargados"""
       contenido = self.file.readlines()
-      alumnos = []
+      alumnos:list[Alumno] = []
       for dato in contenido:
         dato = dato.removeprefix("\"")
         datos = dato.split(",")
