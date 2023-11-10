@@ -1,24 +1,25 @@
 from connection.students_file import Alumno
 from logging import warning
 class ConfigAlumnos:
-    """
-    Clase que se encarga de guardar y gestionar los alumnos recibidos por el fichero
+    """_summary_:
+        Clase que se encarga de filtrar los alumnos por sus atributos
     """
     def __init__(self,alumnos:list[Alumno]) -> None:
-        """
-        Constructor que crea la lista de alumnos para operar con ellos\n
-        PARAMETROS:\n
-        alumnos: Lista cargada de alumnos 
+        """_summary_
+        Constructor que inicializa la lista de alumnos cargada en el fichero
+        Args:
+            alumnos (list[Alumno]): _description_ Lista de alumnos cargada en el fichero
         """
         self.alumnos = alumnos
     
     def organizarPorCurso(self,curso:str) -> list[Alumno]:
-        """
-        Metodo que organiza los alumnos por el curso introducido como parameto\n
-        PARAMS:\n
-        curso: Curso para filtrar los alumnos por el mismo\n
-        RETURN:\n
-        Lista de alumnos filtrados por el curso
+        """_summary_
+        Metodo que filtra los alumnos por un curso pasado por parametro
+        Args:
+            curso (str): _description_ Curso que filtra los alumnos por el mismo
+
+        Returns:
+            list[Alumno]: _description_ La lista de alumnos filtrados por curso
         """
         alumnosCurso:list[Alumno] = []
         for alumno in self.alumnos:
