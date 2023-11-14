@@ -25,23 +25,27 @@ for dato in contenido:
     datos[1] = datos[1].removesuffix("\"")
     datos[1] = datos[1].removeprefix(" ")
     if(datos.__len__()==4):
+        index = datos[3].__len__()
+        datos[3] = datos[3][:index-1]
         alumnos.append(Alumno(datos[0],datos[1],datos[2],datos[3]))
 print(alumnos[0].curso)
-if(alumnos[0].__eq__("1 DAM")):    
-    print("Accept")
-else:
-   print("Don't accept")
+# index = alumnos[0].curso.__len__()
+# print(alumnos[0].curso[:index-1])
+# if(alumnos[0].__eq__("1 DAM")):    
+#     print("Accept")
+# else:
+#    print("Don't accept")
 
-alumnos2:list[Alumno] = []
-curso = "1 DAM"
-curso+="\n"
-if(curso.__eq__("Todos")==False):
-    for alumno1 in alumnos:
-        if(alumno1.curso.__eq__(curso)):
-            alumnos2.append(alumno1)
-else:
-    alumnos2 = alumnos
-alumnosParse = []
-for alumno2 in alumnos2:
-    alumnosParse.append(alumno2.nombre+", "+alumno2.apellido)
-print(alumnosParse)
+# alumnos2:list[Alumno] = []
+# curso = "1 DAM"
+# curso+="\n"
+# if(curso.__eq__("Todos")==False):
+#     for alumno1 in alumnos:
+#         if(alumno1.curso.__eq__(curso)):
+#             alumnos2.append(alumno1)
+# else:
+#     alumnos2 = alumnos
+# alumnosParse = []
+# for alumno2 in alumnos2:
+#     alumnosParse.append(alumno2.nombre+", "+alumno2.apellido)
+# print(alumnosParse)
