@@ -23,6 +23,8 @@ class StudentsFile:
       datos[1] = datos[1].removesuffix("\"")
       datos[1] = datos[1].removeprefix(" ")
       if(datos.__len__()==4):
+        index = datos[3].__len__()
+        datos[3] = datos[3][:index-1]
         alumnos.append(Alumno(datos[0],datos[1],datos[2],datos[3]))
     return alumnos
 
