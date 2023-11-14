@@ -122,7 +122,10 @@ class CrearHuelga (App):
         """
         Metodo que que crea una caja donde puedes seleccionar los alumnos que existen
         """ 
-        selectionAlumnos = Selection(id="SelectionAlumnos")
+        curso = self.selectionCurso.value
+        curso+="\n"
+        listaAlumnos = self.mostrarAlumnoPorCurso(curso=curso)
+        selectionAlumnos = Selection(id="SelectionAlumnos",items=listaAlumnos)
         selectionAlumnos.style.width = 200
         selectionAlumnos.style.padding = 30
         return selectionAlumnos
@@ -176,9 +179,9 @@ class CrearHuelga (App):
         """
         listaAlumnos:list[Alumno] = ALUMNOS_OPERATOR.readFile()
         alumnos:list[Alumno] = []
-        if(curso!="Todos"):
+        if(curso.__eq__("Todos")==False):
             for alumno in listaAlumnos:
-                if(alumno.curso==curso):
+                if(alumno.curso.__eq__(curso)):
                     alumnos.append(alumno)
         else:
             alumnos = listaAlumnos
@@ -188,5 +191,11 @@ class CrearHuelga (App):
         return alumnosParse
 
     def onChangeCurso(self,widget):
-        self.selectionAlumnos.items = self.mostrarAlumnoPorCurso(curso=self.selectionCurso.value)
+        curso = self.selectionCurso.value
+        cursoArray = []
+        cursoArray.append(curso)
+        print(cursoArray[0])
+        array = self.mostrarAlumnoPorCurso(cursoArray[0])
+        print(array)
+        self.selectionAlumnos.items = ["Algo","Alguien"]#self.mostrarAlumnoPorCurso(curso=curso)
 
