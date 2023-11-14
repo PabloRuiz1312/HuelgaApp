@@ -6,6 +6,7 @@ from toga import TextInput
 from toga.style.pack import *
 from toga import MainWindow
 from toga import Selection
+from toga import Table
 from connection.students_file import StudentsFile
 from connection.students_file import Alumno
 ALUMNOS_OPERATOR = StudentsFile()
@@ -29,6 +30,7 @@ class CrearHuelga (App):
         self.vent1 = False
         self.vent2 = False
         self.vent3 = False
+        self.listaALumnos = ALUMNOS_OPERATOR.readFile()
 
     def startup(self):
         """Metodo que crea la instancia de la ventana"""
@@ -52,15 +54,18 @@ class CrearHuelga (App):
         #TERCERA COLUMNA
         boxAlumnos = Box(style=Pack(direction=ROW))
         boxAlumnos.add(self.createSeparator(cantidad=100,id="separatorAlumnos"))
-        boxAlumnos.add(self.createLabelAlumnos())
-        self.selectionAlumnos = self.createSelectionAlumno()
-        boxAlumnos.add(self.selectionAlumnos)
+        #boxAlumnos.add(self.createLabelAlumnos())
+        self.tablaAlumnos = self.createTablaAlumnos()
+        boxAlumnos.add(self.tablaAlumnos)
+        #self.selectionAlumnos = self.createSelectionAlumno()
+        #boxAlumnos.add(self.selectionAlumnos)
         #BOX PRINCIPAL
         mainBox.add(boxLabelsCurso)
         mainBox.add(boxLabelsHuelga)
         mainBox.add(boxAlumnos)
         self.main_window.content = mainBox
         self.main_window.show()
+
     def createLabelCurso(self):
         """
         Metodo que crea un label con curso como identificador
@@ -121,15 +126,21 @@ class CrearHuelga (App):
     def createSelectionAlumno(self):
         """
         Metodo que que crea una caja donde puedes seleccionar los alumnos que existen
+        !DEPRECATED Este widget sera sustituido mas adelante por el de una tabla
         """ 
         curso = self.selectionCurso.value
-        curso+="\n"
         listaAlumnos = self.mostrarAlumnoPorCurso(curso=curso)
         selectionAlumnos = Selection(id="SelectionAlumnos",items=listaAlumnos)
         selectionAlumnos.style.width = 200
         selectionAlumnos.style.padding = 30
         return selectionAlumnos
-    
+    def createTablaAlumnos(self):
+        curso = self.selectionCurso.value
+        listaAlumnos = self.mostrarAlumnoPorCurso(curso=curso)
+        tabla = Table(headings=["Alumnos"],accessors=["Nombre"],id="TablaAlumno",data=listaAlumnos)
+        tabla.style.width=300
+        tabla.style.padding = 30
+        return tabla
     def createSeparator(self,cantidad:int,id:str):
         """
         Metodo que separa horizontalmente widgets\n
@@ -155,7 +166,7 @@ class CrearHuelga (App):
         Metodo que recoge los cursos del fichero de alumnos para guardarlos en un selection
         """
         self.cursos = []
-        alumnos:list[Alumno] = ALUMNOS_OPERATOR.readFile()
+        alumnos:list[Alumno] = self.listaALumnos
         for curso in alumnos:
             if(self.cursos.__len__()==0): 
                 self.cursos.append(curso.curso)
@@ -177,25 +188,25 @@ class CrearHuelga (App):
         """
         Metodo que devuelve una lista de alumnos en funcion de su curso
         """
-        listaAlumnos:list[Alumno] = ALUMNOS_OPERATOR.readFile()
+        listaAlumnos:list[Alumno] = self.listaALumnos
         alumnos:list[Alumno] = []
-        if(curso.__eq__("Todos")==False):
-            for alumno in listaAlumnos:
-                if(alumno.curso.__eq__(curso)):
-                    alumnos.append(alumno)
-        else:
+        if(curso=="Todos"):
             alumnos = listaAlumnos
+        else:
+            for alumno in listaAlumnos:
+                if(alumno.curso==curso):
+                    alumnos.append(alumno)
         alumnosParse = []
         for alumno in alumnos:
-            alumnosParse = alumno.nombre+", "+alumno.apellido
+            alumnosParse.append(alumno.nombre+", "+alumno.apellido)
         return alumnosParse
 
     def onChangeCurso(self,widget):
+        """
+        Este metodo cambia el valor de los alumnos\n 
+        """
         curso = self.selectionCurso.value
-        cursoArray = []
-        cursoArray.append(curso)
-        print(cursoArray[0])
-        array = self.mostrarAlumnoPorCurso(cursoArray[0])
+        array = self.mostrarAlumnoPorCurso(curso=curso)
         print(array)
-        self.selectionAlumnos.items = ["Algo","Alguien"]#self.mostrarAlumnoPorCurso(curso=curso)
+        self.tablaAlumnos.data = array
 
