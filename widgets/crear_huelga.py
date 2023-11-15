@@ -119,7 +119,7 @@ class CrearHuelga (App):
         Metodo que crea una caja donde puedes seleccionar los cursos que existen
         """
         listaCursos = self.obtenerCursos()
-        selectionCurso = Selection(id="SelectionCurso",enabled=True,items=listaCursos,on_select=self.onChangeCurso)
+        selectionCurso = Selection(id="SelectionCurso",enabled=True,items=listaCursos,on_change=self.onChangeCurso)
         selectionCurso.style.padding = 32
         selectionCurso.style.width = 200
         return selectionCurso
@@ -153,7 +153,7 @@ class CrearHuelga (App):
     def createTablaAlumnos(self):
         curso = self.selectionCurso.value
         listaAlumnos = self.mostrarAlumnoPorCurso(curso=curso)
-        tabla = Table(headings=["Alumnos"],id="TablaAlumno",data=listaAlumnos,on_activate=self.onDoubleClick)
+        tabla = Table(headings=["Alumnos"],id="TablaAlumno",data=listaAlumnos,on_activate=self.onDoubleClick,multiple_select=True)
         tabla.style.width=250
         return tabla
     
