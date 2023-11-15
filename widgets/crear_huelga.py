@@ -52,17 +52,26 @@ class CrearHuelga (App):
         self.inputHuelga = self.createInputHuelga()
         boxLabelsHuelga.add(self.inputHuelga)
         #TERCERA COLUMNA
+        boxLabelInfo = Box(style=Pack(direction=ROW))
+        boxLabelInfo.add(self.createSeparator(cantidad=130,id="separatorLabelAlumnos"))
+        boxLabelInfo.add(self.crearInfoTablaAlumnos())
+        #CUARTA COLUMNA
         boxAlumnos = Box(style=Pack(direction=ROW))
-        boxAlumnos.add(self.createSeparator(cantidad=100,id="separatorAlumnos"))
+        boxAlumnos.add(self.createSeparator(cantidad=170,id="separatorAlumnos"))
         #boxAlumnos.add(self.createLabelAlumnos())
         self.tablaAlumnos = self.createTablaAlumnos()
         boxAlumnos.add(self.tablaAlumnos)
-        #self.selectionAlumnos = self.createSelectionAlumno()
-        #boxAlumnos.add(self.selectionAlumnos)
+        #QUINTA COLUMNA
+        boxTablaAdded = Box(style=Pack(direction=ROW))
+        boxTablaAdded.add(self.createSeparator(cantidad=140,id="separatorAlumnosAdded"))
+        self.tablaAlumnosAdded = self.createTablaAlumnosAdded()
+        boxTablaAdded.add(self.tablaAlumnosAdded)
         #BOX PRINCIPAL
         mainBox.add(boxLabelsCurso)
         mainBox.add(boxLabelsHuelga)
+        mainBox.add(boxLabelInfo)
         mainBox.add(boxAlumnos)
+        mainBox.add(boxTablaAdded)
         self.main_window.content = mainBox
         self.main_window.show()
 
@@ -134,13 +143,28 @@ class CrearHuelga (App):
         selectionAlumnos.style.width = 200
         selectionAlumnos.style.padding = 30
         return selectionAlumnos
+    
+    def crearInfoTablaAlumnos(self):
+        label = Label(text="Doble click para añadir un alumno",id="BotonAddAlumnos")
+        label.style.font_size = 14
+        label.style.padding = 20
+        return label
+
     def createTablaAlumnos(self):
         curso = self.selectionCurso.value
         listaAlumnos = self.mostrarAlumnoPorCurso(curso=curso)
-        tabla = Table(headings=["Alumnos"],accessors=["Nombre"],id="TablaAlumno",data=listaAlumnos)
-        tabla.style.width=300
+        tabla = Table(headings=["Alumnos"],id="TablaAlumno",data=listaAlumnos,on_double_click=self.onDoubleClick)
+        tabla.style.width=250
+        return tabla
+    
+    
+
+    def createTablaAlumnosAdded(self):
+        tabla = Table(headings=["Alumnos añadidos"],id="TablaAlumnoAdded")
+        tabla.style.width=250
         tabla.style.padding = 30
         return tabla
+
     def createSeparator(self,cantidad:int,id:str):
         """
         Metodo que separa horizontalmente widgets\n
@@ -207,6 +231,11 @@ class CrearHuelga (App):
         """
         curso = self.selectionCurso.value
         array = self.mostrarAlumnoPorCurso(curso=curso)
-        print(array)
         self.tablaAlumnos.data = array
+
+    def onDoubleClick(self,row):
+        alumno = self.tablaAlumnos.selection
+        data = self.tablaAlumnosAdded.data
+        data.append(alumno)
+        self.tablaAlumnosAdded.data = data
 
