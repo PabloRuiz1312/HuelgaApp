@@ -153,7 +153,7 @@ class CrearHuelga (App):
     def createTablaAlumnos(self):
         curso = self.selectionCurso.value
         listaAlumnos = self.mostrarAlumnoPorCurso(curso=curso)
-        tabla = Table(headings=["Alumnos"],id="TablaAlumno",data=listaAlumnos,on_double_click=self.onDoubleClick)
+        tabla = Table(headings=["Alumnos"],id="TablaAlumno",data=listaAlumnos,on_activate=self.onDoubleClick)
         tabla.style.width=250
         return tabla
     
@@ -233,7 +233,7 @@ class CrearHuelga (App):
         array = self.mostrarAlumnoPorCurso(curso=curso)
         self.tablaAlumnos.data = array
 
-    def onDoubleClick(self,row):
+    def onDoubleClick(self):
         alumno = self.tablaAlumnos.selection
         data = self.tablaAlumnosAdded.data
         data.append(alumno)
