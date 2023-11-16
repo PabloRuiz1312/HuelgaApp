@@ -9,7 +9,6 @@ from toga import Selection
 from toga import Table
 from connection.students_file import StudentsFile
 from connection.students_file import Alumno
-ALUMNOS_OPERATOR = StudentsFile()
 class CrearHuelga (App):
     """
     Clase que se encarga de gestionar la ventana donde se crea una huelga
@@ -30,11 +29,12 @@ class CrearHuelga (App):
         self.vent1 = False
         self.vent2 = False
         self.vent3 = False
-        self.listaALumnos = ALUMNOS_OPERATOR.readFile()
+        self.file = StudentsFile()
+        self.listaALumnos = self.file.readFile()
 
     def startup(self):
         """Metodo que crea la instancia de la ventana"""
-        self.main_window = MainWindow(id="CrearHuelga",title=self.title,)
+        self.main_window = MainWindow(id="CrearHuelga",title=self.title,size=[640,520])
 
         mainBox = Box(style=Pack(direction=COLUMN))
         #PRIMERA COLUMNA
@@ -52,26 +52,39 @@ class CrearHuelga (App):
         self.inputHuelga = self.createInputHuelga()
         boxLabelsHuelga.add(self.inputHuelga)
         #TERCERA COLUMNA
-        boxLabelInfo = Box(style=Pack(direction=ROW))
-        boxLabelInfo.add(self.createSeparator(cantidad=130,id="separatorLabelAlumnos"))
-        boxLabelInfo.add(self.crearInfoTablaAlumnos())
-        #CUARTA COLUMNA
         boxAlumnos = Box(style=Pack(direction=ROW))
-        boxAlumnos.add(self.createSeparator(cantidad=170,id="separatorAlumnos"))
-        #boxAlumnos.add(self.createLabelAlumnos())
+        boxAlumnos.add(self.createSeparator(cantidad=150,id="separatorAlumnos"))
         self.tablaAlumnos = self.createTablaAlumnos()
         boxAlumnos.add(self.tablaAlumnos)
+        #CUARTA COLUMNA
+        boxBotonAdd = Box(style=Pack(direction=ROW))
+        boxBotonAdd.add(self.createSeparator(cantidad=150,id="separatorLabelAlumnos"))
+        boxBotonAdd.add(self.crearBotonTablaAlumnos())
+        boxBotonAdd.add(self.crearBotonDeleteAlumno())
+        boxBotonAdd.add(self.crearBotonLimpiarAlumno())
         #QUINTA COLUMNA
         boxTablaAdded = Box(style=Pack(direction=ROW))
-        boxTablaAdded.add(self.createSeparator(cantidad=140,id="separatorAlumnosAdded"))
+        boxTablaAdded.add(self.createSeparator(cantidad=160,id="separatorAlumnosAdded"))
         self.tablaAlumnosAdded = self.createTablaAlumnosAdded()
         boxTablaAdded.add(self.tablaAlumnosAdded)
+        #SEXTA COLUMNA
+        boxLabelInfo = Box(style=Pack(direction=ROW))
+        boxLabelInfo.add(self.createSeparator(cantidad=160,id="separatorLabelInfo"))
+        self.labelInfo = self.createLabelInfo()
+        boxLabelInfo.add(self.labelInfo)
+        #SEPTIMA COLUMNA
+        boxBotonAction = Box(style=Pack(direction=ROW))
+        boxBotonAction.add(self.createSeparator(cantidad=210,id="separatorBotonAction"))
+        boxBotonAction.add(self.crearBotonAddHuelga())
+        boxBotonAction.add(self.crearBotonSalir())
         #BOX PRINCIPAL
         mainBox.add(boxLabelsCurso)
-        mainBox.add(boxLabelsHuelga)
-        mainBox.add(boxLabelInfo)
+        mainBox.add(boxLabelsHuelga)      
         mainBox.add(boxAlumnos)
+        mainBox.add(boxBotonAdd)
         mainBox.add(boxTablaAdded)
+        mainBox.add(boxLabelInfo)
+        mainBox.add(boxBotonAction)
         self.main_window.content = mainBox
         self.main_window.show()
 
@@ -144,27 +157,49 @@ class CrearHuelga (App):
         selectionAlumnos.style.padding = 30
         return selectionAlumnos
     
-    def crearInfoTablaAlumnos(self):
-        label = Label(text="Doble click para añadir un alumno",id="BotonAddAlumnos")
-        label.style.font_size = 14
-        label.style.padding = 20
-        return label
+    def crearBotonTablaAlumnos(self):
+        boton = Button(text="Añadir alumno",id="BotonAddAlumnos",on_press=self.onPressBotonAlumnos)
+        boton.style.padding = 8
+        return boton
 
+    def crearBotonDeleteAlumno(self):
+        boton = Button(text="Borrar alumno",id="BotonBorrarAlumno",on_press=self.onPressBotonBorrarAlumnos)
+        boton.style.padding = 8
+        return boton
+    
+    def crearBotonLimpiarAlumno(self):
+        boton = Button(text="Limpiar",id="BotonLimpiarAlumno",on_press=self.onPressBotonLimpiarAlumnos)
+        boton.style.padding = 8
+        return boton
+
+    def crearBotonAddHuelga(self):
+        boton = Button(text="Crear Huelga",id="CrearHuelga")
+        boton.style.padding = 10
+        return boton
+    
+    def crearBotonSalir(self):
+        boton = Button(text="Salir",id="Salir",on_press=self.onPressSalir)
+        boton.style.padding = 10
+        return boton
+    
     def createTablaAlumnos(self):
         curso = self.selectionCurso.value
         listaAlumnos = self.mostrarAlumnoPorCurso(curso=curso)
-        tabla = Table(headings=["Alumnos"],id="TablaAlumno",data=listaAlumnos,on_activate=self.onDoubleClick,multiple_select=True)
+        tabla = Table(headings=["Alumnos"],id="TablaAlumno",data=listaAlumnos,multiple_select=True)
+        tabla.style.padding = 20
         tabla.style.width=250
         return tabla
     
-    
-
     def createTablaAlumnosAdded(self):
-        tabla = Table(headings=["Alumnos añadidos"],id="TablaAlumnoAdded")
+        tabla = Table(headings=["Alumnos añadidos"],id="TablaAlumnoAdded",multiple_select=True)
         tabla.style.width=250
-        tabla.style.padding = 30
+        tabla.style.padding = 10
         return tabla
 
+    def createLabelInfo(self):
+        label = Label(text="",id="InfoLabel")
+        label.style.font_size = 8
+        return label
     def createSeparator(self,cantidad:int,id:str):
         """
         Metodo que separa horizontalmente widgets\n
@@ -233,9 +268,65 @@ class CrearHuelga (App):
         array = self.mostrarAlumnoPorCurso(curso=curso)
         self.tablaAlumnos.data = array
 
-    def onDoubleClick(self):
+    def onPressBotonAlumnos(self,widget):
         alumno = self.tablaAlumnos.selection
-        data = self.tablaAlumnosAdded.data
-        data.append(alumno)
-        self.tablaAlumnosAdded.data = data
+        datosAlumnos = self.tablaAlumnos.data
+        datosAlumnosAdded = self.tablaAlumnosAdded.data
+   
+        for i in alumno:
+            if(self.comprobacionTabla(i,datosAlumnosAdded)==False):
+                sourceStr = ""+str(i)
+                sourceList = sourceStr.split("'")
+                datosAlumnosAdded.append(sourceList[1])
+        self.tablaAlumnosAdded.data = datosAlumnosAdded
+    
+    def onPressBotonBorrarAlumnos(self,widget):
+        alumno = self.tablaAlumnosAdded.selection
+        oldTable = self.tablaAlumnosAdded.data
+        data = []
+        newTable = []
+        if(alumno.__len__()!=0):
+            for i in oldTable:
+                sourceStr = ""+str(i)
+                sourceList = sourceStr.split("'")
+                data.append(sourceList[1])
+            for i in alumno:
+                sourceStr = ""+str(i)
+                sourceList = sourceStr.split("'")
+                for j in data:
+                    if(sourceList[1]!=j):
+                        newTable.append(j)
+            self.labelInfo.text = ""
+            self.tablaAlumnosAdded.data = newTable
+        else:
+            self.labelInfo.text = "No has seleccionado ningun alumno"
+    
+    def onPressBotonLimpiarAlumnos(self,widget):
+        self.tablaAlumnosAdded.data = []
+            
+
+    def comprobacionTabla(self,dato,datosOtraTabla) -> bool:
+        repetido = False
+        if(datosOtraTabla.__len__()!=0):
+            sourceStr = ""+str(dato)
+            sourceList = sourceStr.split("'")
+            for j in datosOtraTabla:
+                sourceStr2 = ""+str(j)
+                sourceList2 = sourceStr2.split("'")
+                if(sourceList[1]==sourceList2[1]):
+                    repetido=True
+                    self.labelInfo.text = "Alumno "+str(sourceList[1])+" repetido"
+                    break
+                else:
+                    self.labelInfo.text = ""
+        return repetido
+    
+    def onPressSalir(self,widget):
+        self.vent2 = False
+        self.vent1 = True
+        self.file.closeFile()
+        self.app.exit()
+
+
+        
 

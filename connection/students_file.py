@@ -26,7 +26,6 @@ class StudentsFile:
         index = datos[3].__len__()
         datos[3] = datos[3][:index-1]
         alumnos.append(Alumno(datos[0],datos[1],datos[2],datos[3]))
-    self.file.close()
     return alumnos
   
   def closeFile(self) -> None:
