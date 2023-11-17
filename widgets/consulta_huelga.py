@@ -32,6 +32,7 @@ class ConsultaHuelga (App):
         self.vent1 = False
         self.vent2 = False
         self.vent3 = False
+        self.vent4 = False
         self.client:MongoClient = None
         self.database:Database = None
         self.collection:Collection = None
@@ -162,12 +163,13 @@ class ConsultaHuelga (App):
     def listener(self):
         if(self.vent1==False):
             self.on_exit = self.appClosed()
-        return self.vent1,self.vent2,self.vent3
+        return self.vent1,self.vent2,self.vent3,self.vent4
 
     def appClosed(self):
         self.vent1 = False
         self.vent2 = False
         self.vent3 = False
+        self.vent4 = False
 
     def onPressedSalir(self,widget):
         self.vent1 = True

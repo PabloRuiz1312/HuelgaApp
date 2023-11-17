@@ -8,7 +8,7 @@ class HomeWindow(App):
     """
     Clase que se encarga de gestionar la ventana principal
     """
-    def __init__(self,title,id,vent1,vent2,vent3) -> None:
+    def __init__(self,title,id,vent1,vent2,vent3,vent4) -> None:
         """
         Constructor que mediante atributos del padre App crea \n
         una app que gestionara mas adelante un MainWindow \n
@@ -24,6 +24,7 @@ class HomeWindow(App):
         self.vent1 = False
         self.vent2 = False
         self.vent3 = False
+        self.vent4 = False
 
     def startup(self):
         """Metodo que crea la instancia de la ventana"""
@@ -66,7 +67,7 @@ class HomeWindow(App):
         Boton para consultar una huelga por cursos\n
         Returns: El boton con sus atributos
         """
-        button = Button(text="Curso Huelga")
+        button = Button(text="Curso Huelga",on_press=self.onPressedCursoHuelga)
         button.style.padding = 30
         button.style.font_size = 14
         button.style.width = 200
@@ -92,6 +93,11 @@ class HomeWindow(App):
         self.vent1=False
         self.vent3=True
         self.app.exit()
+    
+    def onPressedCursoHuelga(self,widget):
+        self.vent1 = False
+        self.vent4 = True
+        self.app.exit()
 
     def onPressSalir(self,widget):
         self.vent1 = False
@@ -100,11 +106,12 @@ class HomeWindow(App):
         self.app.exit()
 
     def listener(self):
-        if(self.vent2==False and self.vent3==False):
+        if(self.vent2==False and self.vent3==False and self.vent4==False):
             self.on_exit = self.appClosed()
-        return self.vent1,self.vent2,self.vent3
+        return self.vent1,self.vent2,self.vent3,self.vent4
 
     def appClosed(self):
         self.vent1 = False
         self.vent2 = False
         self.vent3 = False
+        self.vent4 = False
