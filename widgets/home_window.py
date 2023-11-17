@@ -55,7 +55,7 @@ class HomeWindow(App):
         Boton para consultar una huelga \n
         Returns: El boton con sus atributos
         """
-        button = Button(text="Consultar huelga")#, on_press=onPress)
+        button = Button(text="Consultar huelga",on_press=self.onPressedConsultarHuelga)
         button.style.padding = 30
         button.style.font_size = 14
         button.style.width = 200
@@ -86,6 +86,11 @@ class HomeWindow(App):
     def onPressCrearHuelga(self,widget):
         self.vent1=False
         self.vent2=True
+        self.app.exit()
+    
+    def onPressedConsultarHuelga(self,widget):
+        self.vent1=False
+        self.vent3=True
         self.app.exit()
 
     def onPressSalir(self,widget):

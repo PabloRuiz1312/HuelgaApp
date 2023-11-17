@@ -22,8 +22,11 @@ class MongoConnection:
             self.client = MongoClient(URL)
             self.database = self.client[self.databaseName]
             self.collection = self.database[self.collectionName]
-        except MongoException:
+        except Exception:
             fatal("Error al conectar con la base de datos")
             
         return self.client,self.database,self.collection
+    
+    def closeConnection(self):
+        self.client.close()
         

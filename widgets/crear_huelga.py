@@ -9,6 +9,10 @@ from toga import Selection
 from toga import Table
 from connection.students_file import StudentsFile
 from connection.students_file import Alumno
+from connection.mongo_connection import MongoConnection
+from pymongo import MongoClient
+from pymongo.database import Database
+from pymongo.collection import Collection
 class CrearHuelga (App):
     """
     Clase que se encarga de gestionar la ventana donde se crea una huelga
@@ -31,6 +35,12 @@ class CrearHuelga (App):
         self.vent3 = False
         self.file = StudentsFile()
         self.listaALumnos = self.file.readFile()
+        self.client:MongoClient = None
+        self.database:Database = None
+        self.collection:Collection = None
+        self.mongo = MongoConnection(databaseName="HuelgaDB",collectionName="huelga")
+        self.client,self.database,self.collection = self.mongo.connection()
+    
 
     def startup(self):
         """Metodo que crea la instancia de la ventana"""
@@ -173,7 +183,7 @@ class CrearHuelga (App):
         return boton
 
     def crearBotonAddHuelga(self):
-        boton = Button(text="Crear Huelga",id="CrearHuelga")
+        boton = Button(text="Crear Huelga",id="CrearHuelga",on_press=self.uploadHuelga)
         boton.style.padding = 10
         return boton
     
@@ -325,8 +335,71 @@ class CrearHuelga (App):
         self.vent2 = False
         self.vent1 = True
         self.file.closeFile()
+        self.mongo.closeConnection()
         self.app.exit()
+    
+    def getAlumnosAdded(self):
+        data = self.tablaAlumnosAdded.data
+        alumnos:list[Alumno] = self.listaALumnos
+        alumnosToAdd = []
+        
+        for i in data:
+            sourceStr = ""+str(i)
+            sourceList = sourceStr.split("'")
+            sourceAlumno = sourceList[1].split(",")
+            sourceAlumno[1] = sourceAlumno[1].removeprefix(" ")
+            for j in alumnos:
+                if(j.nombre==sourceAlumno[0] and j.apellido==sourceAlumno[1]):
+                    alumnosToAdd.append(j)
+        return alumnosToAdd
+    
+    def uploadHuelga(self,widget):
+        alumnos:list[Alumno] = []
+        array:list[dict] = []
+        if(self.inputHuelga.value!=""):
+            textFormat = self.inputHuelga.value.split("/")
+            if(textFormat.__len__()==3):
+                textFormat[1] = textFormat[1].removeprefix(" ")
+                textFormat[2] = textFormat[2].removeprefix(" ")
+                if(textFormat[0].__len__()==2 and textFormat[1].__len__()==2 and textFormat[2].__len__()==4):
+                    if(self.checkFecha(textFormat)):
+                        alumnos = self.getAlumnosAdded()
+                        if(alumnos.__len__()!=0):
+                            for i in alumnos:
+                                alumno = dict(apellido=i.apellido,nombre=i.nombre,dni=i.dni,curso=i.curso)
+                                array.append(alumno)
+                            huelga=dict(fecha=self.inputHuelga.value,alumnos=array)
+                            self.collection.insert_one(huelga)
+                        else:
+                            self.labelInfo.text = "Error, no hay ningun alumno para añadir"
+                    else:
+                        self.labelInfo.text = "Error los meses o dias no coinciden"
+                else:
+                    self.labelInfo.text = "Error, fecha mal introducida el formato debe de ser --/--/----"
+            else:
+                self.labelInfo.text = "Error el formato de fecha debe de ser --/--/----"
+        else:
+            self.labelInfo.text = "Error, la fecha esta vacia"
+    
+    def checkFecha(self,fecha:list) -> bool:
+        checked = False
+        mes = int(fecha[1])
+        dia = int(fecha[0])
+        year = int(fecha[2])
+
+        if(mes==1 or mes==3 or mes==5 or mes==7 or mes==8 or mes==10 or mes==12):
+            checked = dia>0 and dia<=31
+        elif(mes==4 or mes==6 or mes==9 or mes==11):
+            checked = dia>0 and dia<=30
+        elif(mes==2):
+            if(year%4 == 0):
+                checked = dia>0 and dia<=29
+            else:
+                checked = dia>0 and dia<=28
+        return checked
 
 
+#alumno = dict(apellido=apellido,nombre=nombre,dni=dni,curso=curso)
+#coleccion.insert_one(alumno)
         
 
